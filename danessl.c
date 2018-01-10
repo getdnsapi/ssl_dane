@@ -242,6 +242,13 @@ static int match(DANE_SELECTOR_LIST slist, X509 *cert, int depth)
 	    if (buf)
 		i2d_X509_PUBKEY(X509_get_X509_PUBKEY(cert), &buf2);
 	    break;
+	default:
+	    /* To suppress buf and len uninitialized variable warnings */
+	    OPENSSL_assert(slist->value->selector == DANESSL_SELECTOR_CERT
+		|| slist->value->selector == DANESSL_SELECTOR_SPKI);
+	    len = 0;
+	    buf2 = buf = NULL;
+	    break;
 	}
 
 	if (buf == NULL) {
@@ -1233,7 +1240,7 @@ int DANESSL_add_tlsa(
 	DANEerr(DANESSL_F_ADD_TLSA, DANESSL_R_BAD_DIGEST);
 	return 0;
     }
-    if (mdname && *mdname && dlen != EVP_MD_size(md)) {
+    if (mdname && *mdname && (int)dlen != EVP_MD_size(md)) {
 	DANEerr(DANESSL_F_ADD_TLSA, DANESSL_R_BAD_DATA_LENGTH);
 	return 0;
     }
@@ -1268,7 +1275,7 @@ int DANESSL_add_tlsa(
 
 	switch (selector) {
 	case DANESSL_SELECTOR_CERT:
-	    if (!d2i_X509(&x, &p, dlen) || dlen != p - data) {
+	    if (!d2i_X509(&x, &p, dlen) || (int)dlen != p - data) {
 		if (x)
 		    X509_free(x);
 		DANEerr(DANESSL_F_ADD_TLSA, DANESSL_R_BAD_CERT);
@@ -1286,7 +1293,7 @@ int DANESSL_add_tlsa(
 	    break;
 
 	case DANESSL_SELECTOR_SPKI:
-	    if (!d2i_PUBKEY(&k, &p, dlen) || dlen != p - data) {
+	    if (!d2i_PUBKEY(&k, &p, dlen) || (int)dlen != p - data) {
 		if (k)
 		    EVP_PKEY_free(k);
 		DANEerr(DANESSL_F_ADD_TLSA, DANESSL_R_BAD_PKEY);
