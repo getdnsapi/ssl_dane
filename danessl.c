@@ -42,7 +42,13 @@ typedef int CRYPTO_ONCE;
 #endif
 
 #if OPENSSL_VERSION_NUMBER < 0x10002000L
-#warning "OpenSSL 1.0.1 and earlier are EOL, upgrade to 1.0.2 or later"
+/* 
+ * Disabled the #warning preprocessor directive, because warnings are
+ * considered failures in the getdns unit tests.
+ * Also #warning directive is not portable.
+ *
+ * #warning "OpenSSL 1.0.1 and earlier are EOL, upgrade to 1.0.2 or later"
+ */
 #define SSL_is_server(s) ((s)->server)
 #define SSL_get0_param(s) ((s)->param)
 #endif
