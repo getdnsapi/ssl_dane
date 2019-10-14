@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdint.h>
 
+#include <openssl/ssl.h>
 #include <openssl/opensslv.h>
 #include <openssl/err.h>
 #include <openssl/crypto.h>
