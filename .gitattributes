@@ -1,5 +1,6 @@
-/Danessl
-/Makefile
-/connected.c
-/offline.c
-/test-offline.sh
+/.gitattributes		export-ignore
+/Danessl		export-ignore
+/Makefile		export-ignore
+/connected.c		export-ignore
+/offline.c		export-ignore
+/test-offline.sh	export-ignore
