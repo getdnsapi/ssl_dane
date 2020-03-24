@@ -12,6 +12,7 @@
 #include <openssl/safestack.h>
 #include <openssl/objects.h>
 #include <openssl/x509.h>
+#include <openssl/x509_vfy.h>
 #include <openssl/x509v3.h>
 #include <openssl/evp.h>
 #include <openssl/bn.h>
@@ -20,7 +21,7 @@
 #error "OpenSSL 1.0.0 or higher required"
 #endif
 
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
+#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
 #define X509_up_ref(x) CRYPTO_add(&((x)->references), 1, CRYPTO_LOCK_X509)
 #define X509_STORE_CTX_get0_cert(ctx) ((ctx)->cert)
 #define X509_STORE_CTX_get0_untrusted(ctx) ((ctx)->untrusted)
@@ -41,7 +42,7 @@
 typedef int CRYPTO_ONCE;
 #endif
 
-#if OPENSSL_VERSION_NUMBER < 0x10002000L
+#if OPENSSL_VERSION_NUMBER < 0x10002000L || defined(LIBRESSL_VERSION_NUMBER)
 #warning "OpenSSL 1.0.1 and earlier are EOL, upgrade to 1.0.2 or later"
 #define SSL_is_server(s) ((s)->server)
 #define SSL_get0_param(s) ((s)->param)
@@ -883,7 +884,7 @@ static int verify_chain(X509_STORE_CTX *ctx)
 	dane->match = top;
 	X509_up_ref(top);
 
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
+#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
 	if (X509_check_issued(top, top) != X509_V_OK) {
 	    X509_STORE_CTX_set_error_depth(ctx, dane->depth);
 	    X509_STORE_CTX_set_current_cert(ctx, top);
@@ -1444,7 +1445,7 @@ static void dane_init(void)
     dane_idx = SSL_get_ex_new_index(0, 0, 0, 0, 0);
 }
 
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
+#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
 static void run_once(volatile int *once, void (*init)(void))
 {
     int wlock = 0;
